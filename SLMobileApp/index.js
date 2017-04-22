@@ -1,6 +1,6 @@
 module.exports = function (context, data) 
 {
-    context.log('Webhook was triggered!');
+    context.log(data.machine);
     var DocumentDBClient = require('documentdb').DocumentClient
     , config = require('./config')
     , host = config.host
