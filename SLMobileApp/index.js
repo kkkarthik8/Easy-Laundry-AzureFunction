@@ -19,8 +19,8 @@ module.exports = function (context, data)
             for (var queryResult of results) {
                 let resultString = JSON.stringify(queryResult);
                 context.res = resultString;
+                context.log(context.res);
             }
-            console.log();
         }
 
     });
