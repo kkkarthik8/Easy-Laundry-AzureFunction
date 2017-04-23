@@ -1,11 +1,10 @@
-module.exports = function (context, data) 
+module.exports = function (context, req) 
 {
-    context.log(data.machine);
     var DocumentDBClient = require('documentdb').DocumentClient
     , config = require('./config')
     , host = config.host
     , masterKey = config.authKey
-    , query = `SELECT TOP 1 c.machine, c.machinestatus FROM c WHERE c.machine = ${data.machine} ORDER BY c.eventprocessedutctime DESC`
+    , query = `SELECT TOP 1 c.machine, c.machinestatus FROM c WHERE c.machine = "${req.body.machine}" ORDER BY c.eventprocessedutctime DESC`
     , databaseId = config.databaseId
     , databaseUrl = `dbs/${config.databaseId}`
     , collectionUrl = `${databaseUrl}/colls/${config.collectionId}`;
@@ -14,15 +13,11 @@ module.exports = function (context, data)
     var client = new DocumentDBClient(host, { masterKey: masterKey });
     var results = client.queryDocuments(collectionUrl, query).toArray((err, results) => 
     {
-        if (err) reject(err)
+        if (err) context.log(err)
         else {
-            for (var queryResult of results) {
-                let resultString = JSON.stringify(queryResult);
-                context.res = resultString;
-                context.log(context.res);
-            }
-        }
-
+                var r = results[0];
+                context.res = { status: 200, body: r };
+                context.done();
+             }
     });
-    context.done();
 }
